@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
     parser.add_argument(
         "--aws-region",
-        "Specific region to target. Default: Iterate over all regions available.",
+        help="Specific region to target. Default: Iterate over all regions available.",
     )
     args = parser.parse_args()
 
