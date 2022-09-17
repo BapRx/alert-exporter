@@ -25,14 +25,10 @@ class Kubernetes:
 
         if context:
             logging.info(f"Using context {context}")
-            self.client = client.CoreV1Api(
-                api_client=config.new_client_from_config(context=context)
-            )  # FIXME: Wrong context used
-            print(self.client)
-            sys.exit(0)
+            config.load_kube_config(context=context)
         else:
             logging.info(f"Using context {active_context.get('name')}")
-            self.client = client.CoreV1Api()
+        self.client = client.CoreV1Api()
 
     def get_prometheus_rules(self) -> None:
         self.rules = []
