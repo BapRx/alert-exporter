@@ -31,7 +31,7 @@ class Cloudwatch:
     def init_client(self, region: str) -> None:
         self.client = self.session.client("cloudwatch", region_name=region)
 
-    def get_rules(self) -> None:
+    def get_alarms(self) -> None:
         self.rules = []
         for region in self.regions:
             self.init_client(region)

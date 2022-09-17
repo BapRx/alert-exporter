@@ -5,7 +5,7 @@ import os
 import sys
 
 from alert_exporter.sources.cloudwatch import Cloudwatch
-from alert_exporter.sources.prometheus import Prometheus
+from alert_exporter.sources.kubernetes import Kubernetes
 
 
 def main():
@@ -16,6 +16,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--prometheus", default=False, action="store_true")
+    parser.add_argument("--context", default=None)
     parser.add_argument("--cloudwatch", default=False, action="store_true")
     parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
     parser.add_argument(
@@ -24,16 +25,16 @@ def main():
     )
     args = parser.parse_args()
 
-    total_rules = 0
+    rules = []
     if args.prometheus:
-        p = Prometheus()
-        p.get_rules()
-        total_rules += len(p.rules)
+        k = Kubernetes(context=args.context)
+        k.get_prometheus_rules()
+        rules += k.rules
     if args.cloudwatch:
         c = Cloudwatch(profile=args.aws_profile, region=args.aws_region)
-        c.get_rules()
-        total_rules += len(c.rules)
-    if total_rules == 0:
+        c.get_alarms()
+        rules += c.rules
+    if len(rules) == 0:
         logging.warning("No alert rule found.")
     return 0
 
