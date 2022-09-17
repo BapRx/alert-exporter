@@ -1,6 +1,7 @@
 """Console script for alert_exporter."""
 import argparse
 import logging
+import os
 import sys
 
 from alert_exporter.sources.cloudwatch import Cloudwatch
@@ -15,25 +16,24 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--prometheus", default=False, action="store_true")
-    parser.add_argument("--aws-region", default=None)
-    parser.add_argument("--aws-profile", default=None)
     parser.add_argument("--cloudwatch", default=False, action="store_true")
+    parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
+    parser.add_argument(
+        "--aws-region",
+        "Specific region to target. Default: Iterate over all regions available.",
+    )
     args = parser.parse_args()
-    if args.cloudwatch and not args.aws_region:
-        logging.error(
-            "The option '--cloudwatch' needs the '--aws-region' flag to be provided."
-            " (Accepted ENV variables: 'AWS_REGION', 'AWS_DEFAULT_REGION')",
-        )
-        sys.exit(1)
 
-    rules = {}
+    total_rules = 0
     if args.prometheus:
         p = Prometheus()
-        rules["prometheus"] = p.get_rules()
+        p.get_rules()
+        total_rules += len(p.rules)
     if args.cloudwatch:
-        c = Cloudwatch(region=args.aws_region, profile=args.aws_profile)
-        rules["cloudwatch"] = c.get_rules()
-    if not rules:
+        c = Cloudwatch(profile=args.aws_profile, region=args.aws_region)
+        c.get_rules()
+        total_rules += len(c.rules)
+    if total_rules == 0:
         logging.warning("No alert rule found.")
     return 0
 
