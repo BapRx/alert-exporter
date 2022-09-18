@@ -9,12 +9,17 @@ from alert_exporter.sources.kubernetes import Kubernetes
 
 
 def main():
-    logging.basicConfig(
-        level="INFO",
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
-
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log-level",
+        default="WARNING",
+        choices=[
+            "DEBUG",
+            "INFO",
+            "WARNING",
+            "ERROR",
+        ],
+    )
     parser.add_argument("--prometheus", default=False, action="store_true")
     parser.add_argument("--context", default=None)
     parser.add_argument("--cloudwatch", default=False, action="store_true")
@@ -24,6 +29,11 @@ def main():
         help="Specific region to target. Default: Iterate over all regions available.",
     )
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=args.log_level,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
     rules = []
     if args.prometheus:
