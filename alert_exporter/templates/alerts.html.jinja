@@ -14,9 +14,10 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/cr-1.5.6/fh-3.2.4/r-2.3.0/datatables.min.js"></script>        <script type="text/javascript" language="javascript" class="init">
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/cr-1.5.6/fh-3.2.4/r-2.3.0/datatables.min.js"></script>
+        <script type="text/javascript" language="javascript" class="init">
             $(document).ready(function () {
-                {% if rules.cloudwatch %}
+                {% if rules.cloudwatch -%}
                 $("#cloudwatchTable").DataTable({
                     dom: '<"container-fluid"<"row"<"col"B><"#cloudwatchCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
@@ -33,8 +34,8 @@
                 $("#cloudwatchCaption").html(
                     '<p class="fs-4 text-center">Cloudwatch alerts</p>'
                 );
-                {% endif %}
-                {% if rules.prometheus %}
+                {%- endif %}
+                {% if rules.prometheus -%}
                 $("#prometheusTable").DataTable({
                     dom: '<"container-fluid"<"row"<"col"B><"#prometheusCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
@@ -51,7 +52,7 @@
                 $("#prometheusCaption").html(
                     '<p class="fs-4 text-center">Prometheus rules</p>'
                 );
-                {% endif %}
+                {%- endif %}
                 $("nav a").click(function (event) {
                     event.preventDefault();
                     if (event.target.hash) {
@@ -72,19 +73,19 @@
              class="navbar sticky-top navbar-expand-lg navbar-light bg-light fh-fixedHeader">
             <a class="navbar-brand ms-4" href="#">List of monitoring alerts</a>
             <ul class="nav nav-pills">
-                {% if rules.cloudwatch %}
+                {% if rules.cloudwatch -%}
                     <li class="nav-item">
                         <a class="nav-link" href="#cloudwatch-alerts">Cloudwatch alerts</a>
                     </li>
-                {% endif %}
-                {% if rules.prometheus %}
+                {%- endif %}
+                {% if rules.prometheus -%}
                     <li class="nav-item">
                         <a class="nav-link" href="#prometheus-rules">Prometheus rules</a>
                     </li>
-                {% endif %}
+                {%- endif %}
             </ul>
         </nav>
-        {% if rules.cloudwatch %}
+        {% if rules.cloudwatch -%}
             <div class="mt-4" id="cloudwatch-alerts">
                 <table id="cloudwatchTable"
                        class="table table-striped dt-responsive nowrap w-100 display">
@@ -98,7 +99,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for rule in rules.cloudwatch %}
+                        {%- for rule in rules.cloudwatch %}
                             <tr>
                                 <td>{{ rule.name }}</td>
                                 <td>{{ rule.description }}</td>
@@ -108,12 +109,12 @@
                                     <code>{{ rule.rule }}</code>
                                 </td>
                             </tr>
-                        {% endfor %}
+                        {%- endfor %}
                     </tbody>
                 </table>
             </div>
-        {% endif %}
-        {% if rules.prometheus %}
+        {%- endif %}
+        {% if rules.prometheus -%}
             <div class="mt-4" id="prometheus-rules">
                 <table id="prometheusTable"
                        class="table table-striped dt-responsive nowrap w-100 display">
@@ -132,7 +133,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for rule in rules.prometheus %}
+                        {%- for rule in rules.prometheus %}
                             <tr>
                                 <td>
                                     {{ rule.promRuleName }}
@@ -159,10 +160,10 @@
                                     {{ '<a href="' + rule.runbook +'" target="_blank">' + rule.runbook + '</a>' if rule.runbook.startswith("http") else rule.runbook }}
                                 </td>
                             </tr>
-                        {% endfor %}
+                        {%- endfor %}
                     </tbody>
                 </table>
             </div>
-        {% endif %}
+        {%- endif %}
     </body>
 </html>

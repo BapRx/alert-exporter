@@ -1,0 +1,25 @@
+# List of monitoring alerts
+{% if rules.cloudwatch -%}
+- [Cloudwatch alerts](#cloudwatch-alerts)
+{%- endif %}
+{% if rules.prometheus -%}
+- [Prometheus rules](#prometheus-rules)
+{%- endif %}
+
+{% if rules.cloudwatch -%}
+## Cloudwatch alerts
+|Name|Description|Type|Region|Rule|
+|---|---|---|---|---|
+{% for rule in rules.cloudwatch -%}
+|{{ rule.name }}|{{ rule.description }}|{{ rule.type }}|{{ rule.region }}|<code>{{ rule.rule }}</code>|
+{% endfor -%}
+{% endif %}
+
+{% if rules.prometheus -%}
+## Prometheus rules
+|PrometheusRule|Group/Name|Summary|Description|Expr|For|Severity|Runbook|
+|---|---|---|---|---|---|---|---|
+{% for rule in rules.prometheus -%}
+|{{ rule.promRuleName }}|{{ rule.name }}|{{ rule.summary.replace("|", "\|") }}|{{ rule.description.replace("\n", " ").replace("|", "\|") }}|<code>{{ rule.expr.replace("\n", " ") }}</code>|{{ rule.for }}|{{ rule.severity }}|{{ '[' + rule.runbook +'](' + rule.runbook + ')' if rule.runbook.startswith("http") else rule.runbook }}|
+{% endfor -%}
+{% endif -%}
