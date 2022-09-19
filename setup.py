@@ -29,7 +29,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     description=(
-        "Extract the alerts configured in different sources"
+        "Extract alerts configured in different sources"
         " (eg: Prometheus Rules, CloudWatch Alarms, etc.)"
     ),
     entry_points={
