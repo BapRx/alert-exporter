@@ -1,0 +1,7 @@
+Source,{{ 'PrometheusRule' if rules.prometheus }},{{ 'Group/' if rules.prometheus }}Name,{{ 'Summary' if rules.prometheus }},Description,{{ 'Type,Region' if rules.cloudwatch }},Rule,{{ 'For,Severity,Runbook' if rules.prometheus }}
+{%- for rule in rules.cloudwatch %}
+    Cloudwatch,,{{ rule.name }},,{{ rule.description }},{{ rule.type }},{{ rule.region }},{{ rule.rule }},,,
+{%- endfor %}
+{% for rule in rules.prometheus -%}
+    Prometheus,{{ rule.promRuleName }},{{ rule.name }},{{ rule.summary }},{{ rule.description.replace("\n", " ") }},,,{{ rule.expr.replace("\n", " ") }},{{ rule.for }},{{ rule.severity }},{{ '[' + rule.runbook +'](' + rule.runbook + ')' if rule.runbook.startswith("http") else rule.runbook }}
+{% endfor -%}
