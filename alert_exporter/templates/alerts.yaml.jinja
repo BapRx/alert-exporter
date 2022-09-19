@@ -1,0 +1,24 @@
+---
+{% if rules.cloudwatch -%}
+cloudwatch:
+{%- for rule in rules.cloudwatch %}
+    - name: {{ rule.name }}
+      description: {{ rule.description }}
+      type: {{ rule.type }}
+      region: {{ rule.region }}
+      rule: {{ rule.rule }}
+{%- endfor %}
+{%- endif %}
+{% if rules.prometheus -%}
+prometheus:
+{%- for rule in rules.prometheus %}
+    - name: {{ rule.name }}
+      promRuleName: {{ rule.promRuleName }}
+      summary: "{{ rule.summary | replace('"', '\\"') }}"
+      description: "{{ rule.description | replace("\n", " ") | replace('"', '\\"') }}"
+      for: {{ rule.for }}
+      expr: "{{ rule.expr | replace("\n", " ") | replace('"', '\\"') }}"
+      severity: {{ rule.severity }}
+      runbook: {{ rule.runbook }}
+{%- endfor %}
+{%- endif %}
