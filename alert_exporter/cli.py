@@ -18,6 +18,43 @@ AVAILABLE_FORMATS = {
 }
 
 
+def init_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log-level",
+        default="WARNING",
+        choices=[
+            "DEBUG",
+            "INFO",
+            "WARNING",
+            "ERROR",
+        ],
+    )
+    parser.add_argument("-o", "--output-file", required=True)
+    parser.add_argument("--jinja-template", nargs="?")
+    parser.add_argument(
+        "-f", "--format", choices=list(set(AVAILABLE_FORMATS.values())) + ["custom"]
+    )
+    parser.add_argument("--prometheus", default=False, action="store_true")
+    parser.add_argument("--context", nargs="?")
+    parser.add_argument("--cloudwatch", default=False, action="store_true")
+    parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
+    parser.add_argument(
+        "--aws-region",
+        help="Specific region to target. Default: Iterate over all regions available.",
+    )
+    args = parser.parse_args()
+
+    if args.format == "custom" and not args.jinja_template:
+        logging.error(
+            "You chose to export the result in a custom format."
+            " You need to provide a Jinja2 file with the --jinja-template flag."
+        )
+        sys.exit(1)
+
+    return args
+
+
 def get_template_file(
     output_file: str, output_format: str, jinja2_template: str
 ) -> str:
@@ -61,37 +98,7 @@ def render_template(template_file: str, rules: list, output_file: str) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--log-level",
-        default="WARNING",
-        choices=[
-            "DEBUG",
-            "INFO",
-            "WARNING",
-            "ERROR",
-        ],
-    )
-    parser.add_argument("-o", "--output-file", required=True)
-    parser.add_argument("--jinja-template", nargs="?")
-    parser.add_argument(
-        "-f", "--format", choices=list(set(AVAILABLE_FORMATS.values())) + ["custom"]
-    )
-    parser.add_argument("--prometheus", default=False, action="store_true")
-    parser.add_argument("--context", nargs="?")
-    parser.add_argument("--cloudwatch", default=False, action="store_true")
-    parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
-    parser.add_argument(
-        "--aws-region",
-        help="Specific region to target. Default: Iterate over all regions available.",
-    )
-    args = parser.parse_args()
-    if args.format == "custom" and not args.jinja_template:
-        logging.error(
-            "You chose to export the result in a custom format."
-            " You need to provide a Jinja2 file with the --jinja-template flag."
-        )
-
+    args = init_args()
     logging.basicConfig(
         level=args.log_level,
         format="%(asctime)s - %(levelname)s - %(message)s",

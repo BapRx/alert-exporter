@@ -18,7 +18,7 @@
             $(document).ready(function () {
                 {% if rules.cloudwatch %}
                 $("#cloudwatchTable").DataTable({
-                    dom: '<"container-fluid"<"row"<"col"B><"col"l><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
+                    dom: '<"container-fluid"<"row"<"col"B><"#cloudwatchCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
                     fixedHeader: true,
@@ -30,10 +30,13 @@
                         },
                     ],
                 });
+                $("#cloudwatchCaption").html(
+                    '<p class="fs-4 text-center">Cloudwatch alerts</p>'
+                );
                 {% endif %}
                 {% if rules.prometheus %}
                 $("#prometheusTable").DataTable({
-                    dom: '<"container-fluid"<"row"<"col"B><"col"l><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
+                    dom: '<"container-fluid"<"row"<"col"B><"#prometheusCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
                     fixedHeader: true,
@@ -59,7 +62,17 @@
                         },
                     ],
                 });
+                $("#prometheusCaption").html(
+                    '<p class="fs-4 text-center">Prometheus rules</p>'
+                );
                 {% endif %}
+                $("nav a").click(function (event) {
+                    event.preventDefault();
+                    $("html,body").animate(
+                        { scrollTop: $(event.target.hash).offset().top },
+                        "fast"
+                    );
+                });
             });
         </script>
     </head>
@@ -86,7 +99,6 @@
         {% if rules.cloudwatch %}
             <div class="mt-4" id="cloudwatch-alerts">
                 <table id="cloudwatchTable" class="table table-striped mw-100">
-                    <caption class="text-center" style="caption-side: top;">Cloudwatch alerts</caption>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -115,7 +127,6 @@
         {% if rules.prometheus %}
             <div class="mt-4" id="prometheus-rules">
                 <table id="prometheusTable" class="table table-striped mw-100">
-                    <caption class="text-center" style="caption-side: top;">Prometheus rules</caption>
                     <thead>
                         <tr>
                             <th>Group/Name</th>
@@ -125,13 +136,17 @@
                             <th>Expression</th>
                             <th>For</th>
                             <th>Severity</th>
-                            <th>Runbook</th>
+                            <th>
+                                Runbook
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for rule in rules.prometheus %}
                             <tr>
-                                <td>{{ rule.name }}</td>
+                                <td>
+                                    {{ rule.name }}
+                                </td>
                                 <td>
                                     {{ rule.type }}
                                 </td>
