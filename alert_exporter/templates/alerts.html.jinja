@@ -21,6 +21,7 @@
                     dom: '<"container-fluid"<"row"<"col"B><"col"l><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
+                    fixedHeader: true,
                     buttons: [
                         'colvis',
                         {
@@ -35,6 +36,7 @@
                     dom: '<"container-fluid"<"row"<"col"B><"col"l><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
+                    fixedHeader: true,
                     buttons: [
                         'colvis',
                         {
@@ -66,7 +68,7 @@
           data-bs-offset="100"
           class="mb-8">
         <nav id="navbar"
-             class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+             class="navbar sticky-top navbar-expand-lg navbar-light bg-light fh-fixedHeader">
             <a class="navbar-brand ms-4" href="#">List of monitoring alerts</a>
             <ul class="nav nav-pills">
                 {% if rules.cloudwatch %}
@@ -107,15 +109,6 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Region</th>
-                            <th>Rule</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         {% endif %}
@@ -129,26 +122,16 @@
                             <th>Type</th>
                             <th>PrometheusRule name</th>
                             <th>Description</th>
-                            <th>
-                                Expression
-                            </th>
-                            <th>
-                                For
-                            </th>
-                            <th>
-                                Severity
-                            </th>
-                            <th>
-                                Runbook
-                            </th>
+                            <th>Expression</th>
+                            <th>For</th>
+                            <th>Severity</th>
+                            <th>Runbook</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for rule in rules.prometheus %}
                             <tr>
-                                <td>
-                                    {{ rule.name }}
-                                </td>
+                                <td>{{ rule.name }}</td>
                                 <td>
                                     {{ rule.type }}
                                 </td>
@@ -173,34 +156,6 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>
-                                Group/Name
-                            </th>
-                            <th>
-                                Type
-                            </th>
-                            <th>
-                                PrometheusRule name
-                            </th>
-                            <th>
-                                Description
-                            </th>
-                            <th>
-                                Expression
-                            </th>
-                            <th>
-                                For
-                            </th>
-                            <th>
-                                Severity
-                            </th>
-                            <th>
-                                Runbook
-                            </th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         {% endif %}
