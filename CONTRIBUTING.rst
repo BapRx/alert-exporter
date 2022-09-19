@@ -68,7 +68,7 @@ Ready to contribute? Here's how to set up `alert_exporter` for local development
 
     $ mkvirtualenv alert_exporter
     $ cd alert_exporter/
-    $ python setup.py develop
+    $ python -m alert_exporter -o minikube.html --prometheus --context minikube --cloudwatch --aws-region eu-west-1
 
 4. Create a branch for local development::
 
