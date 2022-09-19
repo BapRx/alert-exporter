@@ -41,12 +41,12 @@ class Kubernetes:
             for grp in pr["spec"]["groups"]:
                 self.rules += [
                     {
-                        "type": "Prometheus Rule",
                         "promRuleName": prometheus_rule_name,
                         "name": "/".join(
                             filter(None, [r.get("alert"), grp.get("name")])
                         ),
                         "description": r.get("annotations", {}).get("description", ""),
+                        "summary": r.get("annotations", {}).get("summary", ""),
                         "expr": r.get("expr", ""),
                         "for": r.get("for", ""),
                         "severity": r.get("labels", {}).get("severity", ""),

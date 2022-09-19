@@ -47,20 +47,6 @@
                             text: 'Excel export'
                         },
                     ],
-                    columnDefs: [
-                        {
-                            target: 1,
-                            visible: false,
-                        },
-                        {
-                            target: 2,
-                            visible: false,
-                        },
-                        {
-                            target: 3,
-                            visible: false,
-                        },
-                    ],
                 });
                 $("#prometheusCaption").html(
                     '<p class="fs-4 text-center">Prometheus rules</p>'
@@ -100,7 +86,8 @@
         </nav>
         {% if rules.cloudwatch %}
             <div class="mt-4" id="cloudwatch-alerts">
-                <table id="cloudwatchTable" class="table table-striped mw-100">
+                <table id="cloudwatchTable"
+                       class="table table-striped dt-responsive nowrap w-100 display">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -128,13 +115,14 @@
         {% endif %}
         {% if rules.prometheus %}
             <div class="mt-4" id="prometheus-rules">
-                <table id="prometheusTable" class="table table-striped mw-100">
+                <table id="prometheusTable"
+                       class="table table-striped dt-responsive nowrap w-100 display">
                     <thead>
                         <tr>
-                            <th>Group/Name</th>
-                            <th>Type</th>
                             <th>PrometheusRule name</th>
+                            <th>Group/Name</th>
                             <th>Description</th>
+                            <th>Summary</th>
                             <th>Expression</th>
                             <th>For</th>
                             <th>Severity</th>
@@ -147,16 +135,16 @@
                         {% for rule in rules.prometheus %}
                             <tr>
                                 <td>
-                                    {{ rule.name }}
-                                </td>
-                                <td>
-                                    {{ rule.type }}
-                                </td>
-                                <td>
                                     {{ rule.promRuleName }}
                                 </td>
                                 <td>
+                                    {{ rule.name }}
+                                </td>
+                                <td>
                                     {{ rule.description }}
+                                </td>
+                                <td>
+                                    {{ rule.summary }}
                                 </td>
                                 <td>
                                     <code>{{ rule.expr }}</code>
