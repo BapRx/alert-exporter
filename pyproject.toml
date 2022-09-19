@@ -13,6 +13,9 @@ classifiers = [
 ]
 dependencies = ["kubernetes", "boto3", "humanize"]
 
+[project.scripts]
+alert-exporter = "alert_exporter.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/BapRx/alert-exporter"
 "Bug Tracker" = "https://github.com/BapRx/alert-exporter/issues"
