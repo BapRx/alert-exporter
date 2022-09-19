@@ -10,10 +10,10 @@
 ## Cloudwatch alerts
 |Name|Description|Type|Region|Rule|
 |---|---|---|---|---|
-{% for rule in rules.cloudwatch -%}
+{%- for rule in rules.cloudwatch %}
 |{{ rule.name }}|{{ rule.description }}|{{ rule.type }}|{{ rule.region }}|<code>{{ rule.rule }}</code>|
-{% endfor -%}
-{% endif %}
+{%- endfor %}
+{%- endif %}
 
 {% if rules.prometheus -%}
 ## Prometheus rules
