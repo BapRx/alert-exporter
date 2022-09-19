@@ -68,10 +68,12 @@
                 {% endif %}
                 $("nav a").click(function (event) {
                     event.preventDefault();
-                    $("html,body").animate(
-                        { scrollTop: $(event.target.hash).offset().top },
-                        "fast"
-                    );
+                    if (event.target.hash) {
+                        target = $(event.target.hash).offset().top - 80;
+                    } else {
+                        target = 0;
+                    }
+                    $("html,body").animate({ scrollTop: target }, "fast");
                 });
             });
         </script>
