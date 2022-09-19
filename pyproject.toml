@@ -1,20 +1,22 @@
 [project]
 name = "alert-exporter"
 version = "0.1.0"
+keywords = ["alert_exporter", "alert", "monitoring", "prometheus", "cloudwatch"]
 authors = [{ name = "Baptiste ROUX", email = "rouxbaptiste@outlook.com" }]
 description = "Extract alerts configured in different sources (eg: Prometheus Rules, CloudWatch Alarms, etc.)"
 readme = "README.rst"
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
 classifiers = [
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
 ]
+dependencies = ["kubernetes", "boto3", "humanize"]
 
 [project.urls]
-"Homepage" = "https://github.com/BapRx/alert-exporter"
+Homepage = "https://github.com/BapRx/alert-exporter"
 "Bug Tracker" = "https://github.com/BapRx/alert-exporter/issues"
+changelog = "https://github.com/BapRx/alert-exporter/blob/master/CHANGELOG.md"
 
 [tool.black]
 line-length = 88
