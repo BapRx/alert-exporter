@@ -43,14 +43,15 @@ def get_template_file(
     logging.error(
         f"No template found for the output file extension '{file_extension}'."
     )
+    sys.exit(1)
 
 
-def render_template(template_file: str, content: list, output_file: str) -> None:
+def render_template(template_file: str, rules: list, output_file: str) -> None:
     env = Environment(
         loader=PackageLoader("alert_exporter"), autoescape=select_autoescape()
     )
     template = env.get_template(template_file)
-    rendered = template.render(content=content)
+    rendered = template.render(rules=rules)
     if "/" in output_file:
         absolute_file = output_file
     else:
@@ -113,7 +114,10 @@ def main():
             output_format=args.format,
             jinja2_template=args.jinja_template,
         ),
-        content=rules,
+        rules={
+            "prometheus": k.rules if args.prometheus else [],
+            "cloudwatch": c.rules if args.cloudwatch else [],
+        },
         output_file=args.output_file,
     )
     return 0

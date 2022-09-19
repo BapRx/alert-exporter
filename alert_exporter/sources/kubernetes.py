@@ -1,5 +1,4 @@
 """Kubernetes class for Alert Exporter."""
-import json
 import logging
 import sys
 
@@ -42,10 +41,16 @@ class Kubernetes:
             for grp in pr["spec"]["groups"]:
                 self.rules += [
                     {
-                        "PrometheusRule": prometheus_rule_name,
-                        "group": grp.get("name"),
-                        "expr": r.get("expr"),
+                        "type": "Prometheus Rule",
+                        "promRuleName": prometheus_rule_name,
+                        "name": "/".join(
+                            filter(None, [r.get("alert"), grp.get("name")])
+                        ),
+                        "description": r.get("annotations", {}).get("description", ""),
+                        "expr": r.get("expr", ""),
+                        "for": r.get("for", ""),
+                        "severity": r.get("labels", {}).get("severity", ""),
+                        "runbook": r.get("annotations", {}).get("runbook_url", ""),
                     }
                     for r in grp["rules"]
                 ]
-        print(json.dumps(self.rules, indent=2))

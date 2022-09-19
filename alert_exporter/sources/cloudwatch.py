@@ -45,8 +45,8 @@ class Cloudwatch:
                     {
                         "region": region,
                         "type": alarm_type,
-                        "name": r.get("AlarmName"),
-                        "description": r.get("AlarmDescription"),
+                        "name": r.get("AlarmName", ""),
+                        "description": r.get("AlarmDescription", ""),
                         "rule": (
                             f'{r.get("MetricName")}'
                             f' {COMPARISON_OPERATORS[r.get("ComparisonOperator")]}'
