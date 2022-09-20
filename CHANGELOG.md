@@ -18,3 +18,9 @@
 ## 0.2.1 (2022-09-20)
 
 - Fix broken install resulting in ModuleNotFoundError
+
+## 0.2.2 (2022-09-20)
+
+- Implement GreaterThanUpperThreshold and LessThanLowerThreshold alarm thresholds.
+- Fix error while querying multiple regions
+- Increase AWS log level to ERROR unless debug is enabled
