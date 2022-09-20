@@ -111,8 +111,12 @@ def main():
         k.get_prometheus_rules()
         rules += k.rules
     if args.cloudwatch:
-        c = Cloudwatch(profile=args.aws_profile, region=args.aws_region)
-        c.get_alarms(debug=bool(args.log_level == "DEBUG"))
+        c = Cloudwatch(
+            profile=args.aws_profile,
+            region=args.aws_region,
+            debug=bool(args.log_level == "DEBUG"),
+        )
+        c.get_alarms(profile=args.aws_profile, debug=bool(args.log_level == "DEBUG"))
         rules += c.rules
     if len(rules) == 0:
         logging.warning("No alert rule found.")
