@@ -1,14 +1,14 @@
 [project]
 name = "alert-exporter"
-version = "0.1.1"
+version = "0.2.0"
 keywords = ["alert_exporter", "alert", "monitoring", "prometheus", "cloudwatch"]
 authors = [{ name = "Baptiste ROUX", email = "rouxbaptiste@outlook.com" }]
 description = "Extract alerts configured in different sources (eg: Prometheus Rules, CloudWatch Alarms, etc.)"
-readme = "README.rst"
+readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
 ]
 dependencies = ["kubernetes", "boto3", "humanize"]

@@ -8,3 +8,9 @@
 
 - Fix broken install due to wrong usage of setup.py
 - Rename command line from alert_exporter to alert-exporter
+
+## 0.2.0 (2022-09-20)
+
+- Fix custom template handling when using packaged module
+- Update docs
+- Release beta version
