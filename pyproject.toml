@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "alert-exporter"
-version = "0.2.0"
+name = "alert_exporter"
+version = "0.2.1"
 keywords = ["alert_exporter", "alert", "monitoring", "prometheus", "cloudwatch"]
 authors = [{ name = "Baptiste ROUX", email = "rouxbaptiste@outlook.com" }]
 description = "Extract alerts configured in different sources (eg: Prometheus Rules, CloudWatch Alarms, etc.)"
@@ -10,8 +14,9 @@ requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = ["kubernetes", "boto3", "humanize"]
+dependencies = ["kubernetes", "boto3", "humanize", "jinja2"]
 
 [project.scripts]
 alert-exporter = "alert_exporter.cli:main"
@@ -20,6 +25,14 @@ alert-exporter = "alert_exporter.cli:main"
 Homepage = "https://github.com/BapRx/alert-exporter"
 "Bug Tracker" = "https://github.com/BapRx/alert-exporter/issues"
 changelog = "https://github.com/BapRx/alert-exporter/blob/master/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["alert_exporter", "alert_exporter.sources"]
+exclude = ["alert_exporter.templates"]
+namespaces = false
+
+[tool.setuptools.package-data]
+"*" = ["*.jinja"]
 
 [tool.black]
 line-length = 88

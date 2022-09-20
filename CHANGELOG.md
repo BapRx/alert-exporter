@@ -14,3 +14,7 @@
 - Fix custom template handling when using packaged module
 - Update docs
 - Release beta version
+
+## 0.2.1 (2022-09-20)
+
+- Fix broken install resulting in ModuleNotFoundError
