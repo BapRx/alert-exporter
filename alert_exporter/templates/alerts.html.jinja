@@ -92,22 +92,22 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Rule</th>
                             <th>Description</th>
                             <th>Type</th>
                             <th>Region</th>
-                            <th>Rule</th>
                         </tr>
                     </thead>
                     <tbody>
                         {%- for rule in rules.cloudwatch %}
                             <tr>
                                 <td>{{- rule.name -}}</td>
-                                <td>{{- rule.description -}}</td>
-                                <td>{{- rule.type -}}</td>
-                                <td>{{- rule.region -}}</td>
                                 <td>
                                     <code>{{- rule.rule -}}</code>
                                 </td>
+                                <td>{{- rule.type -}}</td>
+                                <td>{{- rule.region -}}</td>
+                                <td>{{- rule.description -}}</td>
                             </tr>
                         {%- endfor %}
                     </tbody>

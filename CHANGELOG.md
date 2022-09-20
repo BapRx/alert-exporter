@@ -21,6 +21,11 @@
 
 ## 0.2.2 (2022-09-20)
 
-- Implement GreaterThanUpperThreshold and LessThanLowerThreshold alarm thresholds.
+- Implement GreaterThanUpperThreshold and LessThanLowerThreshold alarm thresholds
 - Fix error while querying multiple regions
 - Increase AWS log level to ERROR unless debug is enabled
+
+## 0.2.3 (2022-09-20)
+
+- Add version command-line flag
+- Improve HTML layout for Cloudwatch alerts by moving description in last position

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "alert_exporter"
-version = "0.2.2"
+version = "0.2.3"
 keywords = ["alert_exporter", "alert", "monitoring", "prometheus", "cloudwatch"]
 authors = [{ name = "Baptiste ROUX", email = "rouxbaptiste@outlook.com" }]
 description = "Extract alerts configured in different sources (eg: Prometheus Rules, CloudWatch Alarms, etc.)"
