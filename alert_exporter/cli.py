@@ -1,10 +1,17 @@
 """Console script for alert_exporter."""
-import argparse
 import logging
 import os
 import sys
+from argparse import SUPPRESS, ArgumentParser, Namespace
+from pathlib import Path
 
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    PackageLoader,
+    Template,
+    select_autoescape,
+)
 
 from alert_exporter.sources.cloudwatch import Cloudwatch
 from alert_exporter.sources.kubernetes import Kubernetes
@@ -18,8 +25,12 @@ AVAILABLE_FORMATS = {
 }
 
 
-def init_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+def init_args() -> Namespace:
+    parser = ArgumentParser(
+        description="Extract alerts configured in different sources"
+        " (eg: Prometheus Rules, CloudWatch Alarms, etc.)",
+        usage=SUPPRESS,
+    )
     parser.add_argument(
         "--log-level",
         default="WARNING",
@@ -32,9 +43,7 @@ def init_args() -> argparse.Namespace:
     )
     parser.add_argument("-o", "--output-file", required=True)
     parser.add_argument("--jinja-template", nargs="?")
-    parser.add_argument(
-        "-f", "--format", choices=list(set(AVAILABLE_FORMATS.values())) + ["custom"]
-    )
+    parser.add_argument("-f", "--format", choices=list(set(AVAILABLE_FORMATS.values())))
     parser.add_argument("--prometheus", default=False, action="store_true")
     parser.add_argument("--context", nargs="?")
     parser.add_argument("--cloudwatch", default=False, action="store_true")
@@ -45,13 +54,6 @@ def init_args() -> argparse.Namespace:
     )
     args = parser.parse_args()
 
-    if args.format == "custom" and not args.jinja_template:
-        logging.error(
-            "You chose to export the result in a custom format."
-            " You need to provide a Jinja2 file with the --jinja-template flag."
-        )
-        sys.exit(1)
-
     return args
 
 
@@ -59,12 +61,13 @@ def get_template_file(
     output_file: str, output_format: str, jinja2_template: str
 ) -> str:
     if output_format:
-        if output_format == "custom":
-            return jinja2_template
-        elif output_format == "markdown":
+        if output_format == "markdown":
             return "alerts.md.jinja"
         else:
             return f"alerts.{output_format}.jinja"
+    else:
+        if jinja2_template:
+            return jinja2_template
     file_extension = output_file.split(".")[-1]
     if not file_extension:
         logging.error(
@@ -78,16 +81,14 @@ def get_template_file(
             return "alerts.md.jinja"
         return f"alerts.{AVAILABLE_FORMATS[file_extension]}.jinja"
     logging.error(
-        f"No template found for the output file extension '{file_extension}'."
+        f"No output format detected for the output file extension '{file_extension}'."
+        " If you want to export in a custom format,"
+        " you need to provide a Jinja2 file with the --jinja-template flag."
     )
     sys.exit(1)
 
 
-def render_template(template_file: str, rules: list, output_file: str) -> None:
-    env = Environment(
-        loader=PackageLoader("alert_exporter"), autoescape=select_autoescape()
-    )
-    template = env.get_template(template_file)
+def render_template(template: Template, rules: list, output_file: str) -> None:
     rendered = template.render(rules=rules)
     if "/" in output_file:
         absolute_file = output_file
@@ -111,16 +112,31 @@ def main():
         rules += k.rules
     if args.cloudwatch:
         c = Cloudwatch(profile=args.aws_profile, region=args.aws_region)
-        c.get_alarms()
+        c.get_alarms(debug=bool(args.log_level == "DEBUG"))
         rules += c.rules
     if len(rules) == 0:
         logging.warning("No alert rule found.")
-    render_template(
-        get_template_file(
+        return 1
+
+    if args.jinja_template:
+        path = Path(args.jinja_template)
+        if not path.exists():
+            logging.error(f"The template file {str(path)} does not exist.")
+            return 1
+        template_file = path.name
+        env = Environment(loader=FileSystemLoader(path.parent.absolute()))
+    else:
+        template_file = get_template_file(
             output_file=args.output_file,
             output_format=args.format,
             jinja2_template=args.jinja_template,
-        ),
+        )
+        env = Environment(
+            loader=PackageLoader("alert_exporter"), autoescape=select_autoescape()
+        )
+    template = env.get_template(template_file)
+    render_template(
+        template=template,
         rules={
             "prometheus": k.rules if args.prometheus else [],
             "cloudwatch": c.rules if args.cloudwatch else [],

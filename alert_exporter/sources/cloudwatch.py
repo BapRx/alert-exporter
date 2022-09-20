@@ -1,6 +1,7 @@
 """Cloudwatch class for Alert Exporter."""
 
 import logging
+import traceback
 from datetime import timedelta
 from time import sleep
 
@@ -31,14 +32,18 @@ class Cloudwatch:
     def init_client(self, region: str) -> None:
         self.client = self.session.client("cloudwatch", region_name=region)
 
-    def get_alarms(self) -> None:
+    def get_alarms(self, debug: bool) -> None:
         self.rules = []
         for region in self.regions:
             self.init_client(region)
             try:
                 alarms = self.client.describe_alarms()
             except ClientError as e:
-                logging.debug(f"Error while describing alarms in region {region}: ", e)
+                logging.warning(
+                    f"Error while describing alarms in region {region}: {e}"
+                )
+                if debug:
+                    print(traceback.format_exc())
                 continue
             for alarm_type in ["CompositeAlarms", "MetricAlarms"]:
                 self.rules += [
