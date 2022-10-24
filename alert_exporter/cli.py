@@ -1,8 +1,8 @@
 """Console script for alert_exporter."""
+import json
 import logging
 import os
 import sys
-import json
 from argparse import SUPPRESS, ArgumentParser, Namespace
 from pathlib import Path
 
@@ -32,7 +32,7 @@ def init_args() -> Namespace:
         " (eg: Prometheus Rules, CloudWatch Alarms, etc.)",
         usage=SUPPRESS,
     )
-    parser.add_argument("-v", "--version", action="version", version="Version 0.2.3")
+    parser.add_argument("-v", "--version", action="version", version="Version 0.3.1")
     parser.add_argument(
         "--log-level",
         default="WARNING",

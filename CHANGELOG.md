@@ -33,3 +33,7 @@
 ## 0.3.0 (2022-10-24)
 
 - Add --prometheus-filters flag
+
+## 0.3.1 (2022-10-24)
+
+- Fix typo & bump version returned by `alert-exporter --version`

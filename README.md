@@ -23,12 +23,13 @@ Extract alerts configured in different sources (eg: Prometheus Rules, CloudWatch
 
 optional arguments:
   -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
   --log-level {DEBUG,INFO,WARNING,ERROR}
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
   --jinja-template [JINJA_TEMPLATE]
   -f {markdown,csv,html,yaml}, --format {markdown,csv,html,yaml}
   --prometheus
-  --prometheus-filter [JSON]
+  --prometheus-filters PROMETHEUS_FILTERS
   --context [CONTEXT]
   --cloudwatch
   --aws-profile AWS_PROFILE
