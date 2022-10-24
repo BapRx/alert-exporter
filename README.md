@@ -46,10 +46,10 @@ The current context is used unless you provide the `--context` flag.
 alert-exporter -o minikube.html --prometheus --context minikube
 ```
 
-You can filter prometheus rule to match specific labels using the '--prometheus-filter' flag.
+You can filter prometheus rule to match specific labels using the '--prometheus-filters' flag.
 
 ```bash
-alert-exporter -o minikube.html --prometheus --context minikube --prometheus-filter '{"severity": "critical"}'
+alert-exporter -o minikube.html --prometheus --context minikube --prometheus-filters '{"severity": "critical"}'
 ```
 
 #### AWS Cloudwatch

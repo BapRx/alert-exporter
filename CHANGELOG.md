@@ -33,4 +33,4 @@
 
 ## 0.3.0 (2022-10-24)
 
-- Add --prometheus-filter flag
+- Add --prometheus-filters flag
