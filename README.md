@@ -28,6 +28,7 @@ optional arguments:
   --jinja-template [JINJA_TEMPLATE]
   -f {markdown,csv,html,yaml}, --format {markdown,csv,html,yaml}
   --prometheus
+  --prometheus-filter [JSON]
   --context [CONTEXT]
   --cloudwatch
   --aws-profile AWS_PROFILE
@@ -43,6 +44,12 @@ The current context is used unless you provide the `--context` flag.
 
 ```bash
 alert-exporter -o minikube.html --prometheus --context minikube
+```
+
+You can filter prometheus rule to match specific labels using the '--prometheus-filter' flag.
+
+```bash
+alert-exporter -o minikube.html --prometheus --context minikube --prometheus-filter '{"severity": "critical"}'
 ```
 
 #### AWS Cloudwatch
