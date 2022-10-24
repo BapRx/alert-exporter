@@ -29,3 +29,8 @@
 
 - Add version command-line flag
 - Improve HTML layout for Cloudwatch alerts by moving description in last position
+
+
+## 0.3.0 (2022-10-24)
+
+- Add --prometheus-filter flag
