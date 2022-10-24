@@ -55,5 +55,7 @@ class Kubernetes:
                         "runbook": r.get("annotations", {}).get("runbook_url", ""),
                     }
                     for r in grp["rules"]
-                    if all(r.get('labels', {}).get(k) == v for k, v in self.filters.items())
+                    if all(
+                        r.get("labels", {}).get(k) == v for k, v in self.filters.items()
+                    )
                 ]

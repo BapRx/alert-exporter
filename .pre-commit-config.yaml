@@ -6,19 +6,24 @@ repos:
       - id: end-of-file-fixer
 
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
       - id: black
         args: [--config=pyproject.toml]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.0
+    rev: 5.10.1
     hooks:
       - id: isort
         files: "\\.(py)$"
         args: [--settings-path=pyproject.toml]
 
-  - repo: https://github.com/charliermarsh/ruff
-    rev: v0.0.29
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.82
     hooks:
       - id: lint
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.10.1
+    hooks:
+      - id: validate-pyproject
