@@ -10,8 +10,11 @@ class Kubernetes:
     A wrapper for the Kubernetes client
     """
 
-    def __init__(self, context: str) -> None:
+    def __init__(self, context: str, filters: dict) -> None:
+        self.rules = []
+        self.filters = filters
         config.load_kube_config()
+
         contexts, active_context = config.list_kube_config_contexts()
         available_contexts = [c["name"] for c in contexts]
         if context and context not in available_contexts:
@@ -30,7 +33,6 @@ class Kubernetes:
         self.client = client.CoreV1Api()
 
     def get_prometheus_rules(self) -> None:
-        self.rules = []
         crd_api = client.CustomObjectsApi()
         rules = crd_api.list_cluster_custom_object(
             group="monitoring.coreos.com", version="v1", plural="prometheusrules"
@@ -53,4 +55,5 @@ class Kubernetes:
                         "runbook": r.get("annotations", {}).get("runbook_url", ""),
                     }
                     for r in grp["rules"]
+                    if all(r.get('labels', {}).get(k) == v for k, v in self.filters.items())
                 ]

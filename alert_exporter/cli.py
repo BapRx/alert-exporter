@@ -2,6 +2,7 @@
 import logging
 import os
 import sys
+import json
 from argparse import SUPPRESS, ArgumentParser, Namespace
 from pathlib import Path
 
@@ -46,6 +47,7 @@ def init_args() -> Namespace:
     parser.add_argument("--jinja-template", nargs="?")
     parser.add_argument("-f", "--format", choices=list(set(AVAILABLE_FORMATS.values())))
     parser.add_argument("--prometheus", default=False, action="store_true")
+    parser.add_argument("--prometheus-filters", default={}, type=json.loads)
     parser.add_argument("--context", nargs="?")
     parser.add_argument("--cloudwatch", default=False, action="store_true")
     parser.add_argument("--aws-profile", default=os.getenv("AWS_PROFILE", None))
@@ -108,7 +110,7 @@ def main():
 
     rules = []
     if args.prometheus:
-        k = Kubernetes(context=args.context)
+        k = Kubernetes(context=args.context, filters=args.prometheus_filters)
         k.get_prometheus_rules()
         rules += k.rules
     if args.cloudwatch:
