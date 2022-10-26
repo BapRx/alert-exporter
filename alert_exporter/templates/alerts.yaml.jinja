@@ -1,24 +1,36 @@
 ---
-{% if rules.cloudwatch -%}
+{% if alerts.cloudwatch -%}
 cloudwatch:
-{%- for rule in rules.cloudwatch %}
-    - name: {{ rule.name }}
-      description: {{ rule.description }}
-      type: {{ rule.type }}
-      region: {{ rule.region }}
-      rule: {{ rule.rule }}
+{%- for alert in alerts.cloudwatch %}
+    - name: {{ alert.name }}
+      description: {{ alert.description }}
+      type: {{ alert.type }}
+      region: {{ alert.region }}
+      rule: {{ alert.rule }}
 {%- endfor %}
-{%- endif %}
-{% if rules.prometheus -%}
+{%- endif -%}
+{% if alerts.pingdom -%}
+pingdom:
+{%- for check in alerts.pingdom %}
+    - name: {{ check.name }}
+      url: {{ check.hostname }}
+      type: {{ check.type }}
+      tags:
+        {%- for tag in check.tags %}
+        - {{ tag }}
+        {%- endfor %}
+{%- endfor %}
+{%- endif -%}
+{% if alerts.prometheus %}
 prometheus:
-{%- for rule in rules.prometheus %}
-    - name: {{ rule.name }}
-      promRuleName: {{ rule.promRuleName }}
-      summary: "{{ rule.summary | replace('"', '\\"') }}"
-      description: "{{ rule.description | replace("\n", " ") | replace('"', '\\"') }}"
-      for: {{ rule.for }}
-      expr: "{{ rule.expr | replace("\n", " ") | replace('"', '\\"') }}"
-      severity: {{ rule.severity }}
-      runbook: {{ rule.runbook }}
+{%- for alert in alerts.prometheus %}
+    - name: {{ alert.name }}
+      promRuleName: {{ alert.promRuleName }}
+      summary: "{{ alert.summary | replace('"', '\\"') }}"
+      description: "{{ alert.description | replace("\n", " ") | replace('"', '\\"') }}"
+      for: {{ alert.for }}
+      expr: "{{ alert.expr | replace("\n", " ") | replace('"', '\\"') }}"
+      severity: {{ alert.severity }}
+      runbook: {{ alert.runbook }}
 {%- endfor %}
-{%- endif %}
+{% endif %}

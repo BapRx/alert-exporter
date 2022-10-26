@@ -16,6 +16,7 @@ from jinja2 import (
 
 from alert_exporter.sources.cloudwatch import Cloudwatch
 from alert_exporter.sources.kubernetes import Kubernetes
+from alert_exporter.sources.pingdom import Pingdom
 
 AVAILABLE_FORMATS = {
     "csv": "csv",
@@ -55,9 +56,24 @@ def init_args() -> Namespace:
         "--aws-region",
         help="Specific region to target. Default: Iterate over all regions available.",
     )
+    parser.add_argument("--pingdom", default=False, action="store_true")
+    parser.add_argument("--pingdom-api-key", default=os.getenv("PINGDOM_API_KEY", None))
+    parser.add_argument(
+        "--pingdom-tags",
+        default=None,
+        help="Comma separated list of tags. Eg: tag1,tag2",
+    )
     args = parser.parse_args()
 
     return args
+
+
+def validate_args(args: Namespace) -> None:
+    if args.pingdom and not args.pingdom_api_key:
+        logging.error("A valid Pingdom API key is required to extract checks.")
+    else:
+        return
+    sys.exit(1)
 
 
 def get_template_file(
@@ -91,8 +107,8 @@ def get_template_file(
     sys.exit(1)
 
 
-def render_template(template: Template, rules: list, output_file: str) -> None:
-    rendered = template.render(rules=rules)
+def render_template(template: Template, alerts: list, output_file: str) -> None:
+    rendered = template.render(alerts=alerts)
     if "/" in output_file:
         absolute_file = output_file
     else:
@@ -107,22 +123,30 @@ def main():
         level=args.log_level,
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
+    validate_args(args)
 
-    rules = []
-    if args.prometheus:
-        k = Kubernetes(context=args.context, filters=args.prometheus_filters)
-        k.get_prometheus_rules()
-        rules += k.rules
+    alert_count = 0
     if args.cloudwatch:
         c = Cloudwatch(
             profile=args.aws_profile,
             region=args.aws_region,
             debug=bool(args.log_level == "DEBUG"),
         )
-        c.get_alarms(profile=args.aws_profile, debug=bool(args.log_level == "DEBUG"))
-        rules += c.rules
-    if len(rules) == 0:
-        logging.warning("No alert rule found.")
+        c.get_alarms()
+        alert_count += len(c.alarms)
+    if args.pingdom:
+        p = Pingdom(
+            api_key=args.pingdom_api_key,
+            debug=bool(args.log_level == "DEBUG"),
+        )
+        p.get_checks(tags=args.pingdom_tags)
+        alert_count += len(p.checks)
+    if args.prometheus:
+        k = Kubernetes(context=args.context, filters=args.prometheus_filters)
+        k.get_prometheus_rules()
+        alert_count += len(k.rules)
+    if alert_count == 0:
+        logging.warning("No alert found.")
         return 1
 
     if args.jinja_template:
@@ -144,9 +168,10 @@ def main():
     template = env.get_template(template_file)
     render_template(
         template=template,
-        rules={
+        alerts={
+            "cloudwatch": c.alarms if args.cloudwatch else [],
+            "pingdom": p.checks if args.pingdom else [],
             "prometheus": k.rules if args.prometheus else [],
-            "cloudwatch": c.rules if args.cloudwatch else [],
         },
         output_file=args.output_file,
     )
