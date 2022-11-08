@@ -12,9 +12,11 @@ cloudwatch:
 {% if alerts.pingdom -%}
 pingdom:
 {%- for check in alerts.pingdom %}
-    - name: {{ check.name }}
-      url: {{ check.hostname }}
-      type: {{ check.type }}
+    - url: {{ check.url }}
+      threshold: {{ check.responsetime_threshold }}
+      paused: {{ check.paused }}
+      name: {{ check.name }}
+      type: {{ check.type.keys()|first }}
       tags:
         {%- for tag in check.tags %}
         - {{ tag }}
@@ -26,10 +28,10 @@ prometheus:
 {%- for alert in alerts.prometheus %}
     - name: {{ alert.name }}
       promRuleName: {{ alert.promRuleName }}
-      summary: "{{ alert.summary | replace('"', '\\"') }}"
-      description: "{{ alert.description | replace("\n", " ") | replace('"', '\\"') }}"
+      summary: "{{ alert.summary|replace('"', '\\"') }}"
+      description: "{{ alert.description|replace("\n", " ")|replace('"', '\\"') }}"
       for: {{ alert.for }}
-      expr: "{{ alert.expr | replace("\n", " ") | replace('"', '\\"') }}"
+      expr: "{{ alert.expr|replace("\n", " ")|replace('"', '\\"') }}"
       severity: {{ alert.severity }}
       runbook: {{ alert.runbook }}
 {%- endfor %}

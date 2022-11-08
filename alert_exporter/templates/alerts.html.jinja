@@ -33,7 +33,7 @@
                     ],
                 });
                 $("#{{ alert_type }}Caption").html(
-                    '<p class="fs-4 text-center">{{ alert_type | capitalize }} alerts</p>'
+                    '<p class="fs-4 text-center">{{ alert_type|capitalize }} alerts</p>'
                 );
                 {%- endif %}
                 {%- endfor %}
@@ -60,7 +60,7 @@
                 {% for alert_type, alerts in alerts.items() %}
                 {% if alerts -%}
                     <li class="nav-item">
-                        <a class="nav-link" href="#{{ alert_type }}-alerts">{{ alert_type | capitalize }} alerts</a>
+                        <a class="nav-link" href="#{{ alert_type }}-alerts">{{ alert_type|capitalize }} alerts</a>
                     </li>
                 {%- endif %}
                 {%- endfor %}
@@ -101,8 +101,10 @@
                        class="table table-striped dt-responsive nowrap w-100 display">
                     <thead>
                         <tr>
-                            <th>Name</th>
                             <th>URL</th>
+                            <th>Threshold</th>
+                            <th>Paused</th>
+                            <th>Name</th>
                             <th>Type</th>
                             <th>Tags</th>
                         </tr>
@@ -110,10 +112,12 @@
                     <tbody>
                         {%- for check in alerts.pingdom %}
                             <tr>
+                                <td>{{- check.url -}}</td>
+                                <td>{{- check.responsetime_threshold -}}</td>
+                                <td>{{- check.paused -}}</td>
                                 <td>{{- check.name -}}</td>
-                                <td>{{- check.hostname -}}</td>
-                                <td>{{- check.type -}}</td>
-                                <td>{{- check.tags -}}</td>
+                                <td>{{- check.type.keys()|first -}}</td>
+                                <td>{{- check.tags|join(', ') -}}</td>
                             </tr>
                         {%- endfor %}
                     </tbody>

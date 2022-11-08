@@ -1,11 +1,11 @@
 # List of monitoring alerts
-{% for alert_type, alerts in alerts.items() %}
-{% if alerts -%}
-- [{{ alert_type | capitalize }} alerts](#{{ alert_type }}-alerts)
+{% for alert_type, data in alerts.items() %}
+{%- if data -%}
+- [{{ alert_type|capitalize }} alerts](#{{ alert_type }}-alerts)
 {%- endif %}
-{%- endfor %}
+{% endfor -%}
 
-{% if alerts.cloudwatch -%}
+{%- if alerts.cloudwatch -%}
 ## Cloudwatch alerts
 |Name|Description|Type|Region|Rule|
 |---|---|---|---|---|
@@ -14,16 +14,16 @@
 {%- endfor %}
 {%- endif %}
 
-{% if alerts.pingdom -%}
+{%- if alerts.pingdom -%}
 ## Pingdom alerts
-|Name|URL|Type|Tags|
-|----|---|----|----|
+|URL|Threshold|Paused|Name|Type|Tags|
+|---|---|---|---|---|---|
 {% for check in alerts.pingdom -%}
-|{{ check.name }}|{{ check.hostname }}|{{ check.type }}|{{ check.tags }}|
+|{{ check.url }}|{{ check.responsetime_threshold }}|{{ check.paused }}|{{ check.name }}|{{ check.type.keys()|first }}|{{ check.tags|join(', ') }}|
 {% endfor -%}
 {% endif -%}
 
-{% if alerts.prometheus -%}
+{%- if alerts.prometheus -%}
 ## Prometheus alerts
 |PrometheusRule|Group/Name|Summary|Description|Expr|For|Severity|Runbook|
 |---|---|---|---|---|---|---|---|
