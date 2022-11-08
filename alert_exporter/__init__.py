@@ -2,4 +2,4 @@
 
 __author__ = """Baptiste ROUX"""
 __email__ = "baptiste.roux@skale-5.com"
-__version__ = "0.3.1"
+__version__ = "0.4.0"

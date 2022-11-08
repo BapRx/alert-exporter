@@ -37,3 +37,8 @@
 ## 0.3.1 (2022-10-24)
 
 - Fix typo & bump version returned by `alert-exporter --version`
+
+## 0.4.0 (2022-11-08)
+
+- Add Pingdom source to export configured checks
+- Remove messy CSV output format

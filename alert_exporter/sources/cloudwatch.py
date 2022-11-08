@@ -24,22 +24,24 @@ class Cloudwatch:
     """
 
     def __init__(self, profile: str, region: str, debug: bool) -> None:
-        if not debug:
+        self.debug = debug
+        self.profile = profile
+        if not self.debug:
             logging.getLogger("boto3").setLevel(logging.ERROR)
             logging.getLogger("botocore").setLevel(logging.ERROR)
         try:
-            self.session = boto3.session.Session(profile_name=profile)
+            self.session = boto3.session.Session(profile_name=self.profile)
         except botocore.exceptions.ClientError as e:
             logging.warning(f"Error creating a session with region {region}:")
-            if debug:
+            if self.debug:
                 print(e)
         if region:
             self.regions = [region]
         else:
             self.regions = self.session.get_available_regions(service_name="sts")
 
-    def init_client(self, profile: str, region: str) -> None:
-        self.session = boto3.session.Session(profile_name=profile)
+    def init_client(self, region: str) -> None:
+        self.session = boto3.session.Session(profile_name=self.profile)
         self.client = self.session.client("cloudwatch", region_name=region)
 
     def build_rule_expression(self, rule: dict) -> str:
@@ -68,20 +70,20 @@ class Cloudwatch:
         )
         return expression
 
-    def get_alarms(self, profile: str, debug: bool) -> None:
-        self.rules = []
+    def get_alarms(self) -> None:
+        self.alarms = []
         for region in self.regions:
             logging.info(f"Getting alarms from region {region}")
             try:
-                self.init_client(profile=profile, region=region)
+                self.init_client(region=region)
                 alarms = self.client.describe_alarms()
             except botocore.exceptions.ClientError as e:
                 logging.warning(f"Error while describing alarms in region {region}:")
-                if debug:
+                if self.debug:
                     print(e)
                 continue
             for alarm_type in ["CompositeAlarms", "MetricAlarms"]:
-                self.rules += [
+                self.alarms += [
                     {
                         "region": region,
                         "type": alarm_type,

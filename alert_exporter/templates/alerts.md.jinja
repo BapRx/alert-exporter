@@ -1,25 +1,33 @@
 # List of monitoring alerts
-{% if rules.cloudwatch -%}
-- [Cloudwatch alerts](#cloudwatch-alerts)
+{% for alert_type, data in alerts.items() %}
+{%- if data -%}
+- [{{ alert_type|capitalize }} alerts](#{{ alert_type }}-alerts)
 {%- endif %}
-{% if rules.prometheus -%}
-- [Prometheus rules](#prometheus-rules)
-{%- endif %}
+{% endfor -%}
 
-{% if rules.cloudwatch -%}
+{%- if alerts.cloudwatch -%}
 ## Cloudwatch alerts
 |Name|Description|Type|Region|Rule|
 |---|---|---|---|---|
-{%- for rule in rules.cloudwatch %}
-|{{ rule.name }}|{{ rule.description }}|{{ rule.type }}|{{ rule.region }}|<code>{{ rule.rule }}</code>|
+{%- for alert in alerts.cloudwatch %}
+|{{ alert.name }}|{{ alert.description }}|{{ alert.type }}|{{ alert.region }}|<code>{{ alert.rule }}</code>|
 {%- endfor %}
 {%- endif %}
 
-{% if rules.prometheus -%}
-## Prometheus rules
+{%- if alerts.pingdom -%}
+## Pingdom alerts
+|URL|Threshold|Paused|Name|Type|Tags|
+|---|---|---|---|---|---|
+{% for check in alerts.pingdom -%}
+|{{ check.url }}|{{ check.responsetime_threshold }}|{{ check.paused }}|{{ check.name }}|{{ check.type.keys()|first }}|{{ check.tags|join(', ') }}|
+{% endfor -%}
+{% endif -%}
+
+{%- if alerts.prometheus -%}
+## Prometheus alerts
 |PrometheusRule|Group/Name|Summary|Description|Expr|For|Severity|Runbook|
 |---|---|---|---|---|---|---|---|
-{% for rule in rules.prometheus -%}
-|{{ rule.promRuleName }}|{{ rule.name }}|{{ rule.summary.replace("|", "\|") }}|{{ rule.description.replace("\n", " ").replace("|", "\|") }}|<code>{{ rule.expr.replace("\n", " ") }}</code>|{{ rule.for }}|{{ rule.severity }}|{{ '[' + rule.runbook +'](' + rule.runbook + ')' if rule.runbook.startswith("http") else rule.runbook }}|
+{% for alert in alerts.prometheus -%}
+|{{ alert.promRuleName }}|{{ alert.name }}|{{ alert.summary.replace("|", "\|") }}|{{ alert.description.replace("\n", " ").replace("|", "\|") }}|<code>{{ alert.expr.replace("\n", " ") }}</code>|{{ alert.for }}|{{ alert.severity }}|{{ '[' + alert.runbook +'](' + alert.runbook + ')' if alert.runbook.startswith("http") else alert.runbook }}|
 {% endfor -%}
 {% endif -%}

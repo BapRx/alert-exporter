@@ -17,9 +17,10 @@
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/cr-1.5.6/fh-3.2.4/r-2.3.0/datatables.min.js"></script>
         <script type="text/javascript" language="javascript" class="init">
             $(document).ready(function () {
-                {% if rules.cloudwatch -%}
-                $("#cloudwatchTable").DataTable({
-                    dom: '<"container-fluid"<"row"<"col"B><"#cloudwatchCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
+                {% for alert_type, alerts in alerts.items() %}
+                {% if alerts -%}
+                $("#{{ alert_type }}Table").DataTable({
+                    dom: '<"container-fluid"<"row"<"col"B><"#{{ alert_type }}Caption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
                     fixedHeader: true,
@@ -31,28 +32,11 @@
                         },
                     ],
                 });
-                $("#cloudwatchCaption").html(
-                    '<p class="fs-4 text-center">Cloudwatch alerts</p>'
+                $("#{{ alert_type }}Caption").html(
+                    '<p class="fs-4 text-center">{{ alert_type|capitalize }} alerts</p>'
                 );
                 {%- endif %}
-                {% if rules.prometheus -%}
-                $("#prometheusTable").DataTable({
-                    dom: '<"container-fluid"<"row"<"col"B><"#prometheusCaption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
-                    responsive: true,
-                    paging: false,
-                    fixedHeader: true,
-                    buttons: [
-                        'colvis',
-                        {
-                            extend: 'excel',
-                            text: 'Excel export'
-                        },
-                    ],
-                });
-                $("#prometheusCaption").html(
-                    '<p class="fs-4 text-center">Prometheus rules</p>'
-                );
-                {%- endif %}
+                {%- endfor %}
                 $("nav a").click(function (event) {
                     event.preventDefault();
                     if (event.target.hash) {
@@ -73,19 +57,16 @@
              class="navbar sticky-top navbar-expand-lg navbar-light bg-light fh-fixedHeader">
             <a class="navbar-brand ms-4" href="#">List of monitoring alerts</a>
             <ul class="nav nav-pills">
-                {% if rules.cloudwatch -%}
+                {% for alert_type, alerts in alerts.items() %}
+                {% if alerts -%}
                     <li class="nav-item">
-                        <a class="nav-link" href="#cloudwatch-alerts">Cloudwatch alerts</a>
+                        <a class="nav-link" href="#{{ alert_type }}-alerts">{{ alert_type|capitalize }} alerts</a>
                     </li>
                 {%- endif %}
-                {% if rules.prometheus -%}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#prometheus-rules">Prometheus rules</a>
-                    </li>
-                {%- endif %}
+                {%- endfor %}
             </ul>
         </nav>
-        {% if rules.cloudwatch -%}
+        {% if alerts.cloudwatch -%}
             <div class="mt-4" id="cloudwatch-alerts">
                 <table id="cloudwatchTable"
                        class="table table-striped dt-responsive nowrap w-100 display">
@@ -99,23 +80,52 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {%- for rule in rules.cloudwatch %}
+                        {%- for alert in alerts.cloudwatch %}
                             <tr>
-                                <td>{{- rule.name -}}</td>
+                                <td>{{- alert.name -}}</td>
                                 <td>
-                                    <code>{{- rule.rule -}}</code>
+                                    <code>{{- alert.rule -}}</code>
                                 </td>
-                                <td>{{- rule.type -}}</td>
-                                <td>{{- rule.region -}}</td>
-                                <td>{{- rule.description -}}</td>
+                                <td>{{- alert.type -}}</td>
+                                <td>{{- alert.region -}}</td>
+                                <td>{{- alert.description -}}</td>
                             </tr>
                         {%- endfor %}
                     </tbody>
                 </table>
             </div>
         {%- endif %}
-        {% if rules.prometheus -%}
-            <div class="mt-4" id="prometheus-rules">
+        {% if alerts.pingdom -%}
+            <div class="mt-4" id="pingdom-alerts">
+                <table id="pingdomTable"
+                       class="table table-striped dt-responsive nowrap w-100 display">
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Threshold</th>
+                            <th>Paused</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%- for check in alerts.pingdom %}
+                            <tr>
+                                <td>{{- check.url -}}</td>
+                                <td>{{- check.responsetime_threshold -}}</td>
+                                <td>{{- check.paused -}}</td>
+                                <td>{{- check.name -}}</td>
+                                <td>{{- check.type.keys()|first -}}</td>
+                                <td>{{- check.tags|join(', ') -}}</td>
+                            </tr>
+                        {%- endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {%- endif %}
+        {% if alerts.prometheus -%}
+            <div class="mt-4" id="prometheus-alerts">
                 <table id="prometheusTable"
                        class="table table-striped dt-responsive nowrap w-100 display">
                     <thead>
@@ -133,31 +143,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {%- for rule in rules.prometheus %}
+                        {%- for alert in alerts.prometheus %}
                             <tr>
                                 <td>
-                                    {{- rule.promRuleName -}}
+                                    {{- alert.promRuleName -}}
                                 </td>
                                 <td>
-                                    {{- rule.name -}}
+                                    {{- alert.name -}}
                                 </td>
                                 <td>
-                                    {{- rule.description -}}
+                                    {{- alert.description -}}
                                 </td>
                                 <td>
-                                    {{- rule.summary -}}
+                                    {{- alert.summary -}}
                                 </td>
                                 <td>
-                                    <code>{{- rule.expr -}}</code>
+                                    <code>{{- alert.expr -}}</code>
                                 </td>
                                 <td>
-                                    {{- rule.for -}}
+                                    {{- alert.for -}}
                                 </td>
                                 <td>
-                                    {{- rule.severity -}}
+                                    {{- alert.severity -}}
                                 </td>
                                 <td>
-                                    {{- '<a href="' + rule.runbook +'" target="_blank">' + rule.runbook + '</a>' if rule.runbook.startswith("http") else rule.runbook -}}
+                                    {{- '<a href="' + alert.runbook +'" target="_blank">' + alert.runbook + '</a>' if alert.runbook.startswith("http") else alert.runbook -}}
                                 </td>
                             </tr>
                         {%- endfor %}
