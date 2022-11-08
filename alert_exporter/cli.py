@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 from argparse import SUPPRESS, ArgumentParser, Namespace
+from importlib.metadata import version
 from pathlib import Path
 
 from jinja2 import (
@@ -19,7 +20,6 @@ from alert_exporter.sources.kubernetes import Kubernetes
 from alert_exporter.sources.pingdom import Pingdom
 
 AVAILABLE_FORMATS = {
-    "csv": "csv",
     "html": "html",
     "md": "markdown",
     "yaml": "yaml",
@@ -30,10 +30,12 @@ AVAILABLE_FORMATS = {
 def init_args() -> Namespace:
     parser = ArgumentParser(
         description="Extract alerts configured in different sources"
-        " (eg: Prometheus Rules, CloudWatch Alarms, etc.)",
+        " (eg: Prometheus Rules, CloudWatch Alarms, Pingdom)",
         usage=SUPPRESS,
     )
-    parser.add_argument("-v", "--version", action="version", version="Version 0.3.1")
+    parser.add_argument(
+        "-v", "--version", action="version", version=version("alert-exporter")
+    )
     parser.add_argument(
         "--log-level",
         default="WARNING",
