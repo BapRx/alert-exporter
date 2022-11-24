@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2022-11-24
+
+### Documentation
+
+- Use git-cliff to generate CHANGELOG.md
+
+### Features
+
+- Extract URL configured in the bb exporter service monitor
+
 ## [0.4.0] - 2022-11-08
 
 ### Features
