@@ -10,8 +10,9 @@ class Kubernetes:
     A wrapper for the Kubernetes client
     """
 
-    def __init__(self, context: str, filters: dict) -> None:
+    def __init__(self, context: str, filters: dict = {}) -> None:
         self.rules = []
+        self.targets = []
         self.filters = filters
         config.load_kube_config()
 
@@ -30,14 +31,13 @@ class Kubernetes:
             config.load_kube_config(context=context)
         else:
             logging.info(f"Using context {active_context.get('name')}")
-        self.client = client.CoreV1Api()
+        self.crd_api = client.CustomObjectsApi()
 
     def get_prometheus_rules(self) -> None:
-        crd_api = client.CustomObjectsApi()
-        rules = crd_api.list_cluster_custom_object(
+        prometheusrules = self.crd_api.list_cluster_custom_object(
             group="monitoring.coreos.com", version="v1", plural="prometheusrules"
         )
-        for pr in rules.get("items", []):
+        for pr in prometheusrules.get("items", []):
             prometheus_rule_name = pr["metadata"]["name"]
             logging.info(f"Prometheus Rule - {prometheus_rule_name}")
             for grp in pr["spec"]["groups"]:
@@ -59,3 +59,15 @@ class Kubernetes:
                         r.get("labels", {}).get(k) == v for k, v in self.filters.items()
                     )
                 ]
+
+    def get_blackbox_exporter_targets(self) -> None:
+        service_monitors = self.crd_api.list_cluster_custom_object(
+            group="monitoring.coreos.com", version="v1", plural="servicemonitors"
+        )
+        for sm in service_monitors.get("items", []):
+            if "blackbox-exporter" not in sm["metadata"]["name"]:
+                continue
+            logging.info(
+                f'Blackbox-exporter service monitor Rule - {sm["metadata"]["name"]}'
+            )
+            self.targets.append(sm["spec"]["endpoints"][0]["params"]["target"][0])

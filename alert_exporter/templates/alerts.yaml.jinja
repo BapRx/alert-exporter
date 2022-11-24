@@ -23,7 +23,7 @@ pingdom:
         {%- endfor %}
 {%- endfor %}
 {%- endif -%}
-{% if alerts.prometheus %}
+{% if alerts.prometheus -%}
 prometheus:
 {%- for alert in alerts.prometheus %}
     - name: {{ alert.name }}
@@ -34,5 +34,11 @@ prometheus:
       expr: "{{ alert.expr|replace("\n", " ")|replace('"', '\\"') }}"
       severity: {{ alert.severity }}
       runbook: {{ alert.runbook }}
+{%- endfor %}
+{%- endif -%}
+{% if alerts['Blackbox Exporter'] %}
+blackbox_exporter:
+{%- for url in alerts['Blackbox Exporter'] %}
+    - url: {{ url }}
 {%- endfor %}
 {% endif %}

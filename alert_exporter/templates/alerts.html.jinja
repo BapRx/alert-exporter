@@ -19,8 +19,8 @@
             $(document).ready(function () {
                 {% for alert_type, alerts in alerts.items() %}
                 {% if alerts -%}
-                $("#{{ alert_type }}Table").DataTable({
-                    dom: '<"container-fluid"<"row"<"col"B><"#{{ alert_type }}Caption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
+                $("#{{ alert_type|replace(' ', '') }}Table").DataTable({
+                    dom: '<"container-fluid"<"row"<"col"B><"#{{ alert_type|replace(' ', '') }}Caption.col"><"col"f>>>rt<"container-fluid"<"row"<"col"ip>>>',
                     responsive: true,
                     paging: false,
                     fixedHeader: true,
@@ -32,8 +32,8 @@
                         },
                     ],
                 });
-                $("#{{ alert_type }}Caption").html(
-                    '<p class="fs-4 text-center">{{ alert_type|capitalize }} alerts</p>'
+                $("#{{ alert_type|replace(' ', '') }}Caption").html(
+                    '<p class="fs-4 text-center">{{ alert_type|capitalize }}</p>'
                 );
                 {%- endif %}
                 {%- endfor %}
@@ -60,7 +60,7 @@
                 {% for alert_type, alerts in alerts.items() %}
                 {% if alerts -%}
                     <li class="nav-item">
-                        <a class="nav-link" href="#{{ alert_type }}-alerts">{{ alert_type|capitalize }} alerts</a>
+                        <a class="nav-link" href="#{{ alert_type|replace(' ', '') }}-alerts">{{ alert_type|capitalize }}</a>
                     </li>
                 {%- endif %}
                 {%- endfor %}
@@ -168,6 +168,27 @@
                                 </td>
                                 <td>
                                     {{- '<a href="' + alert.runbook +'" target="_blank">' + alert.runbook + '</a>' if alert.runbook.startswith("http") else alert.runbook -}}
+                                </td>
+                            </tr>
+                        {%- endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {%- endif %}
+        {% if alerts['Blackbox Exporter'] -%}
+            <div class="mt-4" id="BlackboxExporter-alerts">
+                <table id="BlackboxExporterTable"
+                       class="table table-striped dt-responsive nowrap w-100 display">
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%- for url in alerts['Blackbox Exporter'] %}
+                            <tr>
+                                <td>
+                                    {{- url -}}
                                 </td>
                             </tr>
                         {%- endfor %}

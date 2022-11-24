@@ -1,12 +1,12 @@
 # List of monitoring alerts
 {% for alert_type, data in alerts.items() %}
 {%- if data -%}
-- [{{ alert_type|capitalize }} alerts](#{{ alert_type }}-alerts)
+- [{{ alert_type|capitalize }}](#{{ alert_type|replace(' ', '-')|lower }})
 {%- endif %}
 {% endfor -%}
 
 {%- if alerts.cloudwatch -%}
-## Cloudwatch alerts
+## Cloudwatch
 |Name|Description|Type|Region|Rule|
 |---|---|---|---|---|
 {%- for alert in alerts.cloudwatch %}
@@ -15,7 +15,7 @@
 {%- endif %}
 
 {%- if alerts.pingdom -%}
-## Pingdom alerts
+## Pingdom
 |URL|Threshold|Paused|Name|Type|Tags|
 |---|---|---|---|---|---|
 {% for check in alerts.pingdom -%}
@@ -24,10 +24,19 @@
 {% endif -%}
 
 {%- if alerts.prometheus -%}
-## Prometheus alerts
+## Prometheus
 |PrometheusRule|Group/Name|Summary|Description|Expr|For|Severity|Runbook|
 |---|---|---|---|---|---|---|---|
 {% for alert in alerts.prometheus -%}
 |{{ alert.promRuleName }}|{{ alert.name }}|{{ alert.summary.replace("|", "\|") }}|{{ alert.description.replace("\n", " ").replace("|", "\|") }}|<code>{{ alert.expr.replace("\n", " ") }}</code>|{{ alert.for }}|{{ alert.severity }}|{{ '[' + alert.runbook +'](' + alert.runbook + ')' if alert.runbook.startswith("http") else alert.runbook }}|
+{% endfor -%}
+{% endif -%}
+
+{%- if alerts['Blackbox Exporter'] -%}
+## Blackbox Exporter
+|URL|
+|---|
+{% for url in alerts['Blackbox Exporter'] -%}
+|{{ url }}|
 {% endfor -%}
 {% endif -%}
