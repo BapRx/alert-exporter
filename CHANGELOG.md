@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.5.1] - 2022-11-24
+## [0.5.1] - 2022-12-01
+
+### Bug Fixes
+
+- Iterate over every endpoints instead of using first element
+
+## [0.5.0] - 2022-11-24
 
 ### Documentation
 
