@@ -70,4 +70,6 @@ class Kubernetes:
             logging.info(
                 f'Blackbox-exporter service monitor Rule - {sm["metadata"]["name"]}'
             )
-            self.targets.append(sm["spec"]["endpoints"][0]["params"]["target"][0])
+            self.targets += [
+                ep["params"]["target"][0] for ep in sm["spec"]["endpoints"]
+            ]
